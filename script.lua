@@ -1,12 +1,13 @@
 --[[
     Moreno Dev King ❤️‍🔥🇧🇷 
-    DEFINITIVE EDITION WITH JUMPSCARE TAB
+    SUPREME GOD EDITION + DEDICATED SCARE TAB
 ]]
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
+local Lighting = game:GetService("Lighting")
 
 -- // 1. CONFIGURAÇÃO DE CARGOS ESPECIAIS
 local OwnerList = {"inc0mum000"}
@@ -65,16 +66,19 @@ end
 -- // 4. INTERFACE WINDUI
 local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 local SelectedPlayer = ""
+local ScareSelectedPlayer = "" -- Alvo específico da aba Susto
 local SavedPos = nil
 local InfJump = false
 local NoclipEnabled = false
 local LoopKillActive = false
+local LoopFlingActive = false
+local FlyEnabled = false
 
 local Window = WindUI:CreateWindow({
     Title = "Moreno Dev King ❤️‍🔥🇧🇷",
     Icon = "rbxassetid://10723343321",
-    Author = "EXECUTORS ONLY + JUMPSCARE",
-    Size = UDim2.fromOffset(680, 700),
+    Author = "SUPREME GOD EDITION",
+    Size = UDim2.fromOffset(680, 720),
     Transparent = true,
     Theme = "Dark"
 })
@@ -132,6 +136,13 @@ TabAdmin:Button({Title = "Instant Bring 📍", Callback = function()
     end)
 end})
 
+TabAdmin:Button({Title = "Void Target (Send to Abyss) 🕳️", Callback = function()
+    if not IsPlayerExecutor(SelectedPlayer) then return end
+    pcall(function()
+        Players[SelectedPlayer].Character.HumanoidRootPart.CFrame = CFrame.new(0, -500, 0)
+    end)
+end})
+
 TabAdmin:Section({Title = "Hostile & Punishment"})
 
 TabAdmin:Button({Title = "Jail Target ⛓️", Callback = function() 
@@ -176,6 +187,30 @@ TabAdmin:Button({Title = "Kill 💀", Callback = function()
     pcall(function() Players[SelectedPlayer].Character:BreakJoints() end) 
 end})
 
+TabAdmin:Button({Title = "Explode 💥", Callback = function() 
+    if not IsPlayerExecutor(SelectedPlayer) then return end
+    local t = Players:FindFirstChild(SelectedPlayer)
+    if t and t.Character and t.Character:FindFirstChild("HumanoidRootPart") then
+        local ex = Instance.new("Explosion", workspace)
+        ex.Position = t.Character.HumanoidRootPart.Position
+    end
+end})
+
+TabAdmin:Button({Title = "Rocket Target 🚀", Callback = function()
+    if not IsPlayerExecutor(SelectedPlayer) then return end
+    local t = Players:FindFirstChild(SelectedPlayer)
+    if t and t.Character and t.Character:FindFirstChild("HumanoidRootPart") then
+        local hrp = t.Character.HumanoidRootPart
+        local b = Instance.new("BodyVelocity", hrp)
+        b.Velocity = Vector3.new(0, 300, 0)
+        b.MaxForce = Vector3.new(0, math.huge, 0)
+        task.wait(2)
+        local ex = Instance.new("Explosion", workspace)
+        ex.Position = hrp.Position
+        b:Destroy()
+    end
+end})
+
 TabAdmin:Toggle({Title = "Loop Kill 🔄", Value = false, Callback = function(state)
     LoopKillActive = state
     spawn(function()
@@ -188,6 +223,24 @@ TabAdmin:Toggle({Title = "Loop Kill 🔄", Value = false, Callback = function(st
     end)
 end})
 
+TabAdmin:Toggle({Title = "Loop Fling 🌪️", Value = false, Callback = function(state)
+    LoopFlingActive = state
+    spawn(function()
+        while LoopFlingActive do
+            if IsPlayerExecutor(SelectedPlayer) then
+                local t = Players:FindFirstChild(SelectedPlayer)
+                if t and t.Character and t.Character:FindFirstChild("HumanoidRootPart") then
+                    local b = Instance.new("BodyVelocity", t.Character.HumanoidRootPart)
+                    b.Velocity = Vector3.new(0, 10000, 0)
+                    b.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+                    game.Debris:AddItem(b, 0.2)
+                end
+            end
+            task.wait(0.3)
+        end
+    end)
+end})
+
 TabAdmin:Button({Title = "Freeze 🧊", Callback = function() 
     if not IsPlayerExecutor(SelectedPlayer) then return end
     pcall(function() Players[SelectedPlayer].Character.HumanoidRootPart.Anchored = true end) 
@@ -196,6 +249,72 @@ end})
 TabAdmin:Button({Title = "Unfreeze 🔥", Callback = function() 
     if not IsPlayerExecutor(SelectedPlayer) then return end
     pcall(function() Players[SelectedPlayer].Character.HumanoidRootPart.Anchored = false end) 
+end})
+
+-- ABA TROLL EXTREMO
+local TabTroll = Window:Tab({ Title = "Troll & Chaos 🧨", Icon = "Flame" })
+
+TabTroll:Section({Title = "Mass Disruptions"})
+
+TabTroll:Button({Title = "Fling All Executors 🌪️", Callback = function()
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer and IsPlayerExecutor(p.Name) and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+            local b = Instance.new("BodyVelocity", p.Character.HumanoidRootPart)
+            b.Velocity = Vector3.new(0, 15000, 0)
+            b.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+            game.Debris:AddItem(b, 0.3)
+        end
+    end
+end})
+
+TabTroll:Button({Title = "Kill All Executors 💀", Callback = function()
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer and IsPlayerExecutor(p.Name) and p.Character then
+            p.Character:BreakJoints()
+        end
+    end
+end})
+
+TabTroll:Button({Title = "Explode All Executors 💥", Callback = function()
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer and IsPlayerExecutor(p.Name) and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+            local ex = Instance.new("Explosion", workspace)
+            ex.Position = p.Character.HumanoidRootPart.Position
+        end
+    end
+end})
+
+-- ABA SUSTO (DEDICADA APENAS A EXECUTORES)
+local TabSusto = Window:Tab({ Title = "Susto 😱", Icon = "ghost" })
+
+TabSusto:Dropdown({
+    Title = "Selecionar Executor Alvo",
+    Values = GetExecutorsList(),
+    Callback = function(v) ScareSelectedPlayer = v end
+})
+
+TabSusto:Section({Title = "Painel de Sustos"})
+
+TabSusto:Button({Title = "Susto 1 (Tela Preta + Grito Estourado) 💀", Callback = function()
+    local target = Players:FindFirstChild(ScareSelectedPlayer)
+    if target and IsPlayerExecutor(target.Name) and target:FindFirstChild("PlayerGui") then
+        local sg = Instance.new("ScreenGui", target.PlayerGui)
+        sg.Name = "SustoGui"
+        sg.IgnoreGuiInset = true
+        
+        local frame = Instance.new("Frame", sg)
+        frame.Size = UDim2.new(1, 0, 1, 0)
+        frame.BackgroundColor3 = Color3.new(0, 0, 0)
+        
+        local sound = Instance.new("Sound", sg)
+        sound.SoundId = "rbxassetid://4633232063"
+        sound.Volume = 10 -- Volume estourado
+        sound:Play()
+        
+        game.Debris:AddItem(sg, 5) -- Remove após 5 segundos
+    else
+        WindUI:Notify({Title = "Erro", Content = "Selecione um executor válido!", Duration = 3})
+    end
 end})
 
 -- ABA SELF & MOVEMENT
@@ -213,7 +332,56 @@ TabSelf:Toggle({Title = "Display Self Rank Tag 🏷️", Value = false, Callback
     end
 end})
 
+TabSelf:Section({Title = "Player Mods"})
+
+TabSelf:Button({Title = "God Mode ⭐", Callback = function()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid.MaxHealth = math.huge
+        LocalPlayer.Character.Humanoid.Health = math.huge
+    end
+end})
+
+TabSelf:Button({Title = "Invisibility 👻", Callback = function()
+    if LocalPlayer.Character then
+        for _, v in pairs(LocalPlayer.Character:GetDescendants()) do
+            if v:IsA("BasePart") or v:IsA("Decal") then
+                v.Transparency = 1
+            end
+        end
+    end
+end})
+
 TabSelf:Section({Title = "Movement Settings"})
+
+TabSelf:Toggle({Title = "Fly Mode 🛸", Value = false, Callback = function(state)
+    FlyEnabled = state
+    local char = LocalPlayer.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+    local hrp = char.HumanoidRootPart
+    
+    if FlyEnabled then
+        local bv = Instance.new("BodyVelocity", hrp)
+        bv.Name = "FlyVelocity"
+        bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+        bv.Velocity = Vector3.new(0,0,0)
+        
+        spawn(function()
+            while FlyEnabled and char and char:FindFirstChild("HumanoidRootPart") do
+                local cam = workspace.CurrentCamera
+                local vel = Vector3.new(0,0,0)
+                if UserInputService:IsKeyDown(Enum.KeyCode.W) then vel = vel + cam.CoordinateFrame.LookVector end
+                if UserInputService:IsKeyDown(Enum.KeyCode.S) then vel = vel - cam.CoordinateFrame.LookVector end
+                if UserInputService:IsKeyDown(Enum.KeyCode.A) then vel = vel - cam.CoordinateFrame.RightVector end
+                if UserInputService:IsKeyDown(Enum.KeyCode.D) then vel = vel + cam.CoordinateFrame.RightVector end
+                bv.Velocity = vel * 75
+                task.wait()
+            end
+            if bv then bv:Destroy() end
+        end)
+    else
+        if hrp:FindFirstChild("FlyVelocity") then hrp.FlyVelocity:Destroy() end
+    end
+end})
 
 TabSelf:Slider({Title = "WalkSpeed", Step = 1, Min = 16, Max = 500, Value = 16, Callback = function(v) 
     if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
@@ -231,26 +399,81 @@ TabSelf:Toggle({Title = "Infinite Jump 🚀", Value = false, Callback = function
 
 TabSelf:Toggle({Title = "Noclip 👻", Value = false, Callback = function(v) NoclipEnabled = v end})
 
--- ABA JUMPSCARES (SÓ AFETA QUEM EXECUTOU)
-local TabJump = Window:Tab({ Title = "Jumpscares 😱", Icon = "ghost" })
+TabSelf:Button({Title = "TP Tool 🛠️", Callback = function()
+    local t = Instance.new("Tool")
+    t.RequiresHandle = false
+    t.Name = "TP Tool"
+    t.Parent = LocalPlayer.Backpack
+    t.Activated:Connect(function() 
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(LocalPlayer:GetMouse().Hit.p + Vector3.new(0, 3, 0)) 
+        end
+    end)
+end})
 
-local function TriggerJump(imageId)
-    local target = Players:FindFirstChild(SelectedPlayer)
-    if target and IsPlayerExecutor(target.Name) then
-        local gui = Instance.new("ScreenGui", target.PlayerGui)
-        local img = Instance.new("ImageLabel", gui)
-        img.Size = UDim2.new(1,0,1,0)
-        img.Image = imageId
-        local snd = Instance.new("Sound", gui)
-        snd.SoundId = "rbxassetid://4633232063"
-        snd.Volume = 10
-        snd:Play()
-        game.Debris:AddItem(gui, 10)
+TabSelf:Button({Title = "Save Position 💾", Callback = function() 
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        SavedPos = LocalPlayer.Character.HumanoidRootPart.CFrame 
     end
-end
+end})
 
-TabJump:Button({Title = "Scare 1 😱", Callback = function() TriggerJump("rbxassetid://12554763870") end})
-TabJump:Button({Title = "Scare 2 🌑", Callback = function() TriggerJump("rbxassetid://12554768340") end})
+TabSelf:Button({Title = "Teleport to Saved 🌀", Callback = function() 
+    if SavedPos and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then 
+        LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPos 
+    end 
+end})
+
+-- ABA WORLD
+local TabWorld = Window:Tab({ Title = "World Control", Icon = "globe" })
+
+TabWorld:Section({Title = "Global Controls"})
+
+TabWorld:Slider({Title = "Server Gravity 🪐", Step = 1, Min = 0, Max = 196, Value = 196, Callback = function(v)
+    workspace.Gravity = v
+end})
+
+TabWorld:Button({Title = "Delete Part Tool (Click to Delete) 🔨", Callback = function()
+    local mouse = LocalPlayer:GetMouse()
+    mouse.Button1Down:Connect(function()
+        if mouse.Target then
+            mouse.Target:Destroy()
+        end
+    end)
+end})
+
+TabWorld:Section({Title = "Time Control"})
+
+TabWorld:Button({Title = "Stop Time (Freeze Executors) ❄️", Callback = function() 
+    for _, p in pairs(Players:GetPlayers()) do 
+        if p ~= LocalPlayer and IsPlayerExecutor(p.Name) and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then 
+            p.Character.HumanoidRootPart.Anchored = true 
+        end 
+    end 
+end})
+
+TabWorld:Button({Title = "Resume Time 🔥", Callback = function() 
+    for _, p in pairs(Players:GetPlayers()) do 
+        if p ~= LocalPlayer and IsPlayerExecutor(p.Name) and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then 
+            p.Character.HumanoidRootPart.Anchored = false 
+        end 
+    end 
+end})
+
+TabWorld:Section({Title = "Environment Lighting"})
+
+TabWorld:Button({Title = "Set Day Time ☀️", Callback = function()
+    Lighting.ClockTime = 14
+end})
+
+TabWorld:Button({Title = "Set Night Time 🌙", Callback = function()
+    Lighting.ClockTime = 0
+end})
+
+TabWorld:Button({Title = "Full Bright 💡", Callback = function()
+    Lighting.Brightness = 2
+    Lighting.ClockTime = 14
+    Lighting.GlobalShadows = false
+end})
 
 -- // 5. LOOPS DO SISTEMA
 UserInputService.JumpRequest:Connect(function() 
@@ -269,4 +492,4 @@ RunService.Stepped:Connect(function()
     end
 end)
 
-WindUI:Notify({Title = "Moreno Dev King", Content = "Jumpscare tab added successfully! 👑", Duration = 5})
+WindUI:Notify({Title = "Moreno Dev King", Content = "Supreme God Edition Loaded with Scare Tab! 👑👻", Duration = 5})
