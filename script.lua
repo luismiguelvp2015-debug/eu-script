@@ -1,6 +1,6 @@
 --[[
     Moreno Dev King ❤️‍🔥🇧🇷 
-    FIXED JAIL (INSIDE TELEPORT) & TARGET TAG MANAGER
+    UPDATE: EXACT PERMISSION HEADER
 ]]
 
 local Players = game:GetService("Players")
@@ -12,12 +12,12 @@ local UserInputService = game:GetService("UserInputService")
 local Owner = {"inc0mum000"}
 local Admins = {"rickmv535", "Miguel9430654", "akilavitoriaoliveira"}
 
--- // 2. TRAVA DE SEGURANÇA (SÓ EXECUTA QUEM ESTÁ NA LISTA)
+-- // 2. TRAVA DE SEGURANÇA
 local isOwner = table.find(Owner, LocalPlayer.Name)
 local isAdmin = table.find(Admins, LocalPlayer.Name)
 
 if not (isOwner or isAdmin) then
-    return -- Interrompe a execução se não estiver na lista
+    return
 end
 
 -- // 3. LÓGICA DE CRIAÇÃO DE TAG
@@ -70,7 +70,7 @@ local LoopKillActive = false
 local Window = WindUI:CreateWindow({
     Title = "Moreno Dev King ❤️‍🔥🇧🇷",
     Icon = "rbxassetid://10723343321",
-    Author = "FIXED JAIL & TAG SYSTEM",
+    Author = "PERMISSION HEADER UPDATED",
     Size = UDim2.fromOffset(650, 670),
     Transparent = true,
     Theme = "Dark"
@@ -87,7 +87,6 @@ TabAdmin:Dropdown({
 
 TabAdmin:Section({Title = "Tag Options"})
 
--- OPÇÃO DE APLICAR TAG NO ALVO SELECIONADO
 TabAdmin:Button({Title = "Give Target Admin Tag 🏷️", Callback = function()
     local t = Players:FindFirstChild(SelectedPlayer)
     if t then
@@ -127,7 +126,6 @@ end})
 
 TabAdmin:Section({Title = "Hostile & Punishment"})
 
--- JAIL CORRIGIDO (Cria a estrutura e coloca você/alvo DENTRO do cubo)
 TabAdmin:Button({Title = "Jail Target ⛓️", Callback = function() 
     local t = Players:FindFirstChild(SelectedPlayer)
     if t and t.Character and t.Character:FindFirstChild("HumanoidRootPart") then 
@@ -154,7 +152,6 @@ TabAdmin:Button({Title = "Jail Target ⛓️", Callback = function()
         createWall(Vector3.new(12, 12, 1), CFrame.new(0, 2.5, -6)) -- Parede Trás
         createWall(Vector3.new(12, 12, 1), CFrame.new(0, 2.5, 6))  -- Parede Frente
 
-        -- Teleporta o alvo exatamente para o meio interno da jaula
         root.CFrame = cf * CFrame.new(0, 1, 0)
     end 
 end})
@@ -321,4 +318,4 @@ RunService.Stepped:Connect(function()
     end
 end)
 
-WindUI:Notify({Title = "Moreno Dev King", Content = "Script Loaded! Jail & Tag options fixed ⛓️🏷️", Duration = 5})
+WindUI:Notify({Title = "Moreno Dev King", Content = "Header updated successfully! 👑", Duration = 5})
