@@ -1,6 +1,6 @@
 --[[
     Moreno Dev King ❤️‍🔥🇧🇷 
-    UPDATE: EXACT PERMISSION HEADER
+    DEFINITIVE EDITION WITH JUMPSCARE TAB
 ]]
 
 local Players = game:GetService("Players")
@@ -8,21 +8,23 @@ local LocalPlayer = Players.LocalPlayer
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
--- // 1. LISTA EXCLUSIVA DE PERMISSÃO
-local Owner = {"inc0mum000"}
-local Admins = {"rickmv535", "Miguel9430654", "akilavitoriaoliveira"}
+-- // 1. CONFIGURAÇÃO DE CARGOS ESPECIAIS
+local OwnerList = {"inc0mum000"}
+local AdminList = {"rickmv535", "Miguel9430654", "akilavitoriaoliveira", "RIP_PEDRO11891"}
 
--- // 2. TRAVA DE SEGURANÇA
-local isOwner = table.find(Owner, LocalPlayer.Name)
-local isAdmin = table.find(Admins, LocalPlayer.Name)
+-- // 2. REGISTRO AUTOMÁTICO DE EXECUTORES
+_G.ScriptExecutors = _G.ScriptExecutors or {}
+_G.ScriptExecutors[LocalPlayer.Name] = true
 
-if not (isOwner or isAdmin) then
-    return
+local function IsPlayerExecutor(playerName)
+    return _G.ScriptExecutors[playerName] == true
 end
 
--- // 3. LÓGICA DE CRIAÇÃO DE TAG
-local function CreateTagForPlayer(targetPlayer, text, isRainbow)
+-- // 3. LÓGICA DE CRIAÇÃO DE TAG (SÓ PARA EXECUTORES)
+local function CreateTagForPlayer(targetPlayer)
     if not targetPlayer or not targetPlayer.Character then return end
+    if not IsPlayerExecutor(targetPlayer.Name) then return end
+    
     local head = targetPlayer.Character:WaitForChild("Head", 10)
     if not head then return end
     
@@ -45,9 +47,9 @@ local function CreateTagForPlayer(targetPlayer, text, isRainbow)
     lbl.TextSize = 28
     lbl.TextStrokeTransparency = 0
     lbl.TextStrokeColor3 = Color3.new(0,0,0)
-    lbl.Text = text
 
-    if isRainbow then
+    if table.find(OwnerList, targetPlayer.Name) then
+        lbl.Text = "Dono- principal !"
         spawn(function()
             while targetPlayer.Character and targetPlayer.Character:FindFirstChild("ExecutorRankTag") do
                 lbl.TextColor3 = Color3.fromHSV(tick() % 5 / 5, 1, 1)
@@ -55,7 +57,8 @@ local function CreateTagForPlayer(targetPlayer, text, isRainbow)
             end
         end)
     else
-        lbl.TextColor3 = Color3.fromRGB(0, 170, 255) -- Azul Admin
+        lbl.Text = "User-admin"
+        lbl.TextColor3 = Color3.fromRGB(0, 170, 255)
     end
 end
 
@@ -70,40 +73,44 @@ local LoopKillActive = false
 local Window = WindUI:CreateWindow({
     Title = "Moreno Dev King ❤️‍🔥🇧🇷",
     Icon = "rbxassetid://10723343321",
-    Author = "PERMISSION HEADER UPDATED",
-    Size = UDim2.fromOffset(650, 670),
+    Author = "EXECUTORS ONLY + JUMPSCARE",
+    Size = UDim2.fromOffset(680, 700),
     Transparent = true,
     Theme = "Dark"
 })
 
--- ABA ADMIN (TARGET)
+-- ABA ADMIN (SÓ MOSTRA E AFETA EXECUTORES)
 local TabAdmin = Window:Tab({ Title = "Admin Controls", Icon = "shield" })
 
+local function GetExecutorsList()
+    local t = {}
+    for _, v in pairs(Players:GetPlayers()) do
+        if IsPlayerExecutor(v.Name) then
+            table.insert(t, v.Name)
+        end
+    end
+    return t
+end
+
 TabAdmin:Dropdown({
-    Title = "Select Target",
-    Values = (function() local t={} for _,v in pairs(Players:GetPlayers()) do table.insert(t,v.Name) end return t end)(),
+    Title = "Select Target (Executors Only)",
+    Values = GetExecutorsList(),
     Callback = function(v) SelectedPlayer = v end
 })
 
-TabAdmin:Section({Title = "Tag Options"})
+TabAdmin:Section({Title = "Tag Management"})
 
-TabAdmin:Button({Title = "Give Target Admin Tag 🏷️", Callback = function()
+TabAdmin:Button({Title = "Refresh Target Tag 🏷️", Callback = function()
     local t = Players:FindFirstChild(SelectedPlayer)
-    if t then
-        CreateTagForPlayer(t, "User-admin", false)
-    end
-end})
-
-TabAdmin:Button({Title = "Remove Target Tag 🗑️", Callback = function()
-    local t = Players:FindFirstChild(SelectedPlayer)
-    if t and t.Character and t.Character:FindFirstChild("ExecutorRankTag") then
-        t.Character.ExecutorRankTag:Destroy()
+    if t and IsPlayerExecutor(t.Name) then
+        CreateTagForPlayer(t)
     end
 end})
 
 TabAdmin:Section({Title = "Teleport & Bring Ops"})
 
 TabAdmin:Button({Title = "Slow TP BR 🚚", Callback = function()
+    if not IsPlayerExecutor(SelectedPlayer) then return end
     local target = Players:FindFirstChild(SelectedPlayer)
     if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character then
         spawn(function()
@@ -119,6 +126,7 @@ TabAdmin:Button({Title = "Slow TP BR 🚚", Callback = function()
 end})
 
 TabAdmin:Button({Title = "Instant Bring 📍", Callback = function()
+    if not IsPlayerExecutor(SelectedPlayer) then return end
     pcall(function()
         Players[SelectedPlayer].Character.HumanoidRootPart.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
     end)
@@ -127,6 +135,7 @@ end})
 TabAdmin:Section({Title = "Hostile & Punishment"})
 
 TabAdmin:Button({Title = "Jail Target ⛓️", Callback = function() 
+    if not IsPlayerExecutor(SelectedPlayer) then return end
     local t = Players:FindFirstChild(SelectedPlayer)
     if t and t.Character and t.Character:FindFirstChild("HumanoidRootPart") then 
         local root = t.Character.HumanoidRootPart
@@ -145,12 +154,12 @@ TabAdmin:Button({Title = "Jail Target ⛓️", Callback = function()
             p.Color = Color3.fromRGB(0, 162, 255)
         end
 
-        createWall(Vector3.new(12, 1, 12), CFrame.new(0, -3.5, 0)) -- Chão
-        createWall(Vector3.new(12, 1, 12), CFrame.new(0, 8.5, 0))  -- Teto
-        createWall(Vector3.new(1, 12, 12), CFrame.new(-6, 2.5, 0)) -- Parede Esq
-        createWall(Vector3.new(1, 12, 12), CFrame.new(6, 2.5, 0))  -- Parede Dir
-        createWall(Vector3.new(12, 12, 1), CFrame.new(0, 2.5, -6)) -- Parede Trás
-        createWall(Vector3.new(12, 12, 1), CFrame.new(0, 2.5, 6))  -- Parede Frente
+        createWall(Vector3.new(12, 1, 12), CFrame.new(0, -3.5, 0))
+        createWall(Vector3.new(12, 1, 12), CFrame.new(0, 8.5, 0))
+        createWall(Vector3.new(1, 12, 12), CFrame.new(-6, 2.5, 0))
+        createWall(Vector3.new(1, 12, 12), CFrame.new(6, 2.5, 0))
+        createWall(Vector3.new(12, 12, 1), CFrame.new(0, 2.5, -6))
+        createWall(Vector3.new(12, 12, 1), CFrame.new(0, 2.5, 6))
 
         root.CFrame = cf * CFrame.new(0, 1, 0)
     end 
@@ -163,6 +172,7 @@ TabAdmin:Button({Title = "Unjail 🔓", Callback = function()
 end})
 
 TabAdmin:Button({Title = "Kill 💀", Callback = function() 
+    if not IsPlayerExecutor(SelectedPlayer) then return end
     pcall(function() Players[SelectedPlayer].Character:BreakJoints() end) 
 end})
 
@@ -170,32 +180,22 @@ TabAdmin:Toggle({Title = "Loop Kill 🔄", Value = false, Callback = function(st
     LoopKillActive = state
     spawn(function()
         while LoopKillActive do
-            pcall(function() Players[SelectedPlayer].Character:BreakJoints() end)
+            if IsPlayerExecutor(SelectedPlayer) then
+                pcall(function() Players[SelectedPlayer].Character:BreakJoints() end)
+            end
             task.wait(0.5)
         end
     end)
 end})
 
-TabAdmin:Button({Title = "Fling Target 🌪️", Callback = function()
-    local t = Players:FindFirstChild(SelectedPlayer)
-    if t and t.Character and t.Character:FindFirstChild("HumanoidRootPart") then
-        local b = Instance.new("BodyVelocity", t.Character.HumanoidRootPart)
-        b.Velocity = Vector3.new(0, 10000, 0)
-        b.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-        game.Debris:AddItem(b, 0.2)
-    end
-end})
-
 TabAdmin:Button({Title = "Freeze 🧊", Callback = function() 
+    if not IsPlayerExecutor(SelectedPlayer) then return end
     pcall(function() Players[SelectedPlayer].Character.HumanoidRootPart.Anchored = true end) 
 end})
 
 TabAdmin:Button({Title = "Unfreeze 🔥", Callback = function() 
+    if not IsPlayerExecutor(SelectedPlayer) then return end
     pcall(function() Players[SelectedPlayer].Character.HumanoidRootPart.Anchored = false end) 
-end})
-
-TabAdmin:Button({Title = "Kick Player 🚫", Callback = function() 
-    pcall(function() Players[SelectedPlayer]:Kick("Kicked by Moreno King Admin") end) 
 end})
 
 -- ABA SELF & MOVEMENT
@@ -205,11 +205,7 @@ TabSelf:Section({Title = "Rank Tag Setting"})
 
 TabSelf:Toggle({Title = "Display Self Rank Tag 🏷️", Value = false, Callback = function(state)
     if state then
-        if isOwner then
-            CreateTagForPlayer(LocalPlayer, "Dono- principal !", true)
-        elseif isAdmin then
-            CreateTagForPlayer(LocalPlayer, "User-admin", false)
-        end
+        CreateTagForPlayer(LocalPlayer)
     else
         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("ExecutorRankTag") then
             LocalPlayer.Character.ExecutorRankTag:Destroy()
@@ -233,59 +229,14 @@ end})
 
 TabSelf:Toggle({Title = "Infinite Jump 🚀", Value = false, Callback = function(v) InfJump = v end})
 
-TabSelf:Toggle({Title = "Noclip 👻", Value = false, Callback = function(v) 
-    NoclipEnabled = v 
-end})
+TabSelf:Toggle({Title = "Noclip 👻", Value = false, Callback = function(v) NoclipEnabled = v end})
 
-TabSelf:Button({Title = "TP Tool 🛠️", Callback = function()
-    local t = Instance.new("Tool")
-    t.RequiresHandle = false
-    t.Name = "TP Tool"
-    t.Parent = LocalPlayer.Backpack
-    t.Activated:Connect(function() 
-        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(LocalPlayer:GetMouse().Hit.p + Vector3.new(0, 3, 0)) 
-        end
-    end)
-end})
-
-TabSelf:Button({Title = "Save Position 💾", Callback = function() 
-    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        SavedPos = LocalPlayer.Character.HumanoidRootPart.CFrame 
-    end
-end})
-
-TabSelf:Button({Title = "Teleport to Saved 🌀", Callback = function() 
-    if SavedPos and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then 
-        LocalPlayer.Character.HumanoidRootPart.CFrame = SavedPos 
-    end 
-end})
-
--- ABA WORLD
-local TabWorld = Window:Tab({ Title = "World Control", Icon = "globe" })
-
-TabWorld:Button({Title = "Stop Time (Freeze All) ❄️", Callback = function() 
-    for _, p in pairs(Players:GetPlayers()) do 
-        if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then 
-            p.Character.HumanoidRootPart.Anchored = true 
-        end 
-    end 
-end})
-
-TabWorld:Button({Title = "Resume Time (Unfreeze) 🔥", Callback = function() 
-    for _, p in pairs(Players:GetPlayers()) do 
-        if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then 
-            p.Character.HumanoidRootPart.Anchored = false 
-        end 
-    end 
-end})
-
--- ABA JUMPSCARE
-local TabJump = Window:Tab({ Title = "Jumpscares", Icon = "ghost" })
+-- ABA JUMPSCARES (SÓ AFETA QUEM EXECUTOU)
+local TabJump = Window:Tab({ Title = "Jumpscares 😱", Icon = "ghost" })
 
 local function TriggerJump(imageId)
     local target = Players:FindFirstChild(SelectedPlayer)
-    if target then
+    if target and IsPlayerExecutor(target.Name) then
         local gui = Instance.new("ScreenGui", target.PlayerGui)
         local img = Instance.new("ImageLabel", gui)
         img.Size = UDim2.new(1,0,1,0)
@@ -318,4 +269,4 @@ RunService.Stepped:Connect(function()
     end
 end)
 
-WindUI:Notify({Title = "Moreno Dev King", Content = "Header updated successfully! 👑", Duration = 5})
+WindUI:Notify({Title = "Moreno Dev King", Content = "Jumpscare tab added successfully! 👑", Duration = 5})
